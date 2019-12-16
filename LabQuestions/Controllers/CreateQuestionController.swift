@@ -67,7 +67,8 @@ class CreateQuestionController: UIViewController {
     
     let question = PostedQuestion(title: questionTitle,
                                   labName: labName,
-                                  description: labDescription, createdAt: String.getISOTimestamp())
+                                  description: labDescription,
+                                  createdAt: String.getISOTimestamp())
     
     // POST question using APIClient
     LabQuestionsAPIClient.postQuestion(question: question) { [weak self, weak sender] (result) in

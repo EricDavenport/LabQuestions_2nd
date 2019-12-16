@@ -96,5 +96,52 @@ struct LabQuestionsAPIClient {
     
   }
   
+  // doing a POST request to send an answer to the Web API
+  static func postAnswer(postedAnswer: PosteAnswer, completion: @escaping (Result<Bool, AppError>) -> ()) {
+    
+    let answerEndpointURLString = "https://5df04c1302b2d90014e1bd66.mockapi.io/answers"
+    
+    guard let url = URL(string: answerEndpointURLString) else {
+      return
+    }
+    
+    // Steps in making a POST request
+    
+    // 1. Convert your swift model (e.g postedAnswer) to data
+    //      we will use JSONENcoder() to convert swift to data
+    do {
+      let data = try JSONEncoder().encode(postedAnswer)
+      
+      // 2. create a mutable URLRequest and assign it the enpointURL
+      var request = URLRequest(url: url)
+      
+      // 3. let web SPI know the type of data being sent
+      request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+      
+      // 4. use httpbody on requst to add the data created from the post answer model, this is the data we are sending to the API, this is similar to the postman body code snippet
+      request.httpBody = data
+      
+      // 5. clarify the http method we are using by default URLSession.datatask does GET request, here we are making a POST request
+      request.httpMethod = "POST"   // (GET, POST) others PUT, DELETE, UPDATE
+      
+      // now we will use NetworkHelper (URLSession wrapper class) to ake the metwork POST request
+      NetworkHelper.shared.performDataTask(with: request) { (result) in
+        switch result {
+        case .failure(let appError):
+          completion(.failure((.networkClientError(appError))))
+        case .success:
+          completion(.success(true))
+        }
+      }
+    } catch {
+      completion(.failure(.encodingError(error)))
+    }
+    
+  }
+  // doing a GET request: to get all answers
+  static func fetchAnswers() {
+    
+  }
+  
   
 }
